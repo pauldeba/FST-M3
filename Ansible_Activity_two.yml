@@ -1,0 +1,24 @@
+---
+- hosts: app
+  become: yes
+  tasks:
+    - name: Update all package on the system
+      yum:
+        name: '*'
+        state: latest
+    - name: Install nginx and firewall
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - nginx
+        - firewall
+    - name: Ensure nginx is up and runnining
+      service:
+        name: nginx
+        state: started
+    - name: Ensure port 80 is opened on the vm
+      ansible.posix.firewalld:
+        port: 80/80/tcp
+        sate: enabled
+
